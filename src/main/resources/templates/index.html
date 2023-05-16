@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <title>환율 계산기</title>
+</head>
+<body style="margin: 20px">
+<h2>환율 계산</h2>
+<div style="margin-bottom: 10px">
+    <label>송금국가: 미국(USD)</label>
+</div>
+
+<div style="margin-bottom: 8px">
+    <label>수취국가: </label>
+    <select id="receiveCountry" th:onchange="getExchangeRate()">
+        <option selected value="KRW">한국(KRW)</option>
+        <option value="JPY">일본(JPY)</option>
+        <option value="PHP">필리핀(PHP)</option>
+    </select>
+</div>
+
+<div style="margin-bottom: 8px">
+    <label>환율: </label>
+    <span id="exchangeRate"></span>
+</div>
+
+<div style="margin-bottom: 8px">
+    <label>송금액:</label>
+    <input type="number" id="amount"> USD
+</div>
+
+<div>
+    <input type="submit" value="Submit" onclick="getReceivingAmount()" style="width: 100px; height: 30px"/>
+</div>
+
+<div id="submitResponse" class="ui field form success"></div>
+</body>
+
+<script>
+    function getExchangeRate() {
+        const sendCountry = 'USD';
+        const receiveCountry = $('#receiveCountry').val();
+
+        $.ajax({
+            url: "/v1/currency/exchange?sendCountry=" + sendCountry
+                + "&receiveCountry=" + receiveCountry,
+            type: "GET",
+            success: function (exchangeRate) {
+                $('#exchangeRate').text(exchangeRate + " " + receiveCountry + "/" + sendCountry);
+            },
+            error: function (jqXHR) {
+                if (jqXHR.status === 400) {
+                    alert("Bad Request!");
+                } else if (jqXHR.status === 500) {
+                    alert("Internal Server Error!");
+                }
+            }
+        });
+    }
+
+    function isInvalidInput() {
+        const amount = $('#amount').val();
+
+        if (amount > 10000 || amount < 0) {
+            alert('송금액이 올바르지 않습니다');
+            return true;
+        }
+
+        return false;
+    }
+
+    function getReceivingAmount() {
+        const sendCountry = 'USD';
+        const receiveCountry = $('#receiveCountry').val();
+        const amount = $('#amount').val();
+
+        if (isInvalidInput()) {
+            return;
+        }
+
+        $.ajax({
+            url: "/v1/currency/amount?sendCountry=" + sendCountry
+                + "&receiveCountry=" + receiveCountry
+                + "&amount=" + amount,
+            type: "GET",
+            success: function (receiveAmount) {
+                $('#submitResponse').html("<div class=\"ui success message\">" +
+                    "<p>수취금액은 " + receiveAmount + " " + receiveCountry + " 입니다.</p>" +
+                    "</div>");
+            },
+            error: function (jqXHR) {
+                if (jqXHR.status === 400) {
+                    alert("Bad Request!");
+                } else if (jqXHR.status === 500) {
+                    alert("Internal Server Error!");
+                }
+            }
+        });
+    }
+</script>
+
+</html>
