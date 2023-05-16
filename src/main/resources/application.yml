@@ -11,7 +11,7 @@ spring:
   thymeleaf:
     cache: false
 currency:
-  access-key: ee50cd7cc73c9b7a7bb3d9617cfb6b9c 22
+  access-key: ee50cd7cc73c9b7a7bb3d9617cfb6b9c
   url: http://www.apilayer.net/api/live
   source: USD
   currencies: KRW,JPY,PHP
