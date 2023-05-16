@@ -1,7 +1,7 @@
 package com.ggu.exchange.api.external;
 
 import com.ggu.exchange.config.CurrencyProperties;
-import com.ggu.exchange.domain.vo.Amount;
+import com.ggu.exchange.domain.Amount;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.retry.annotation.Recover;
